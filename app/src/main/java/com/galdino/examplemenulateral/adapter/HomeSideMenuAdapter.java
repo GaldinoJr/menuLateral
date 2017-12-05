@@ -39,6 +39,7 @@ public class HomeSideMenuAdapter extends BaseAdapter<HomeSideMenuItem>
         HomeSideMenuListItemBinding binding = ((HomeSideMenuViewHolder)holder).getBinding();
         binding.setVariable(BR.homeSideMenuItem,homeSideMenuItem);
         binding.executePendingBindings();
+        binding.icon.setImageResource(dataList.get(position).getIcon());
 //        binding.getRoot().setOnClickListener(view -> getClick());
     }
     // ViewHolder

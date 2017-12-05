@@ -20,7 +20,7 @@
             android:layout_marginLeft="12dp"
             android:layout_marginRight="12dp"
             android:contentDescription="@string/desc_list_item_icon"
-            android:src="@drawable/ic_1" />
+            android:src="@{homeSideMenuItem.getIcon()}"/>
 
         <TextView
             android:id="@+id/title"
@@ -29,6 +29,7 @@
             android:layout_toRightOf="@id/icon"
             android:gravity="center_vertical"
             android:paddingRight="40dp"
+            android:text="@{homeSideMenuItem.getTitleResourceId()}"
             />
 
         <TextView
