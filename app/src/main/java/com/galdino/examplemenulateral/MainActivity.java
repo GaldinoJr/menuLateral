@@ -2,75 +2,138 @@ package com.galdino.examplemenulateral;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+import com.galdino.NavDrawerListAdapter;
+import com.galdino.domain.NavDrawerItem;
 
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
+import java.util.ArrayList;
 
+public class MainActivity extends AppCompatActivity {
+
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+
+    // slide menu items
+    private String[] navMenuTitles;
+    private TypedArray navMenuIcons;
+
+    private ArrayList<NavDrawerItem> navDrawerItems;
+    private NavDrawerListAdapter adapter;
+
+    private static boolean alreadyOpen = false;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initNavigationDrawer();
-        initNavigationDrawerHeader();
-//        initDrawerListener(savedInstanceState);
-    }
+        // load slide menu items
+        navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
 
-    private void initNavigationDrawer()
-    {
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.navigation_view);
+        // nav drawer icons from resources
+        navMenuIcons = getResources().obtainTypedArray(R.array.nav_drawer_icons);
 
-        if (navigationView != null)
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        mDrawerList = findViewById(R.id.list_slidermenu);
+
+        navDrawerItems = new ArrayList<>();
+
+        // adding nav drawer items to array
+        // Home
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
+        // Find People
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
+
+        // Recycle the typed array
+        navMenuIcons.recycle();
+
+        mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
+
+        // setting the nav drawer list adapter
+        adapter = new NavDrawerListAdapter(getApplicationContext(), navDrawerItems);
+        mDrawerList.setAdapter(adapter);
+
+        if (savedInstanceState == null)
         {
-            navigationView.setNavigationItemSelectedListener(this);
+            // on first time display view for first nav item
+            displayView(0);
         }
     }
 
-    private void initNavigationDrawerHeader()
-    {
-        View header = navigationView.getHeaderView(0);
-//        username = (TextView) header.findViewById(R.id.username);
-//        email = (TextView) header.findViewById(R.id.email);
-
-        setupUserInformations();
-    }
-
-    private void setupUserInformations()
-    {
-//        username.setText(R.string.test);
-//        email.setText(R.string.test_email);
-    }
-
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        item.setChecked(true);
-        drawerLayout.closeDrawers();
-        selectDrawerItem(item);
+    protected void onResume()
+    {
+        super.onResume();
 
-        return true;
+        Log.i("Already Open", "" + alreadyOpen);
+
+        if(!alreadyOpen)
+        {
+            mDrawerLayout.openDrawer(mDrawerList);
+            Handler h = new Handler();
+            h.postDelayed(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    mDrawerLayout.closeDrawer(mDrawerList);
+                }
+            }, 2000);
+
+            alreadyOpen = true;
+        }
     }
 
+//    private void initNavigationDrawer()
+//    {
+//        drawerLayout = findViewById(R.id.drawer_layout);
+//        navigationView = findViewById(R.id.navigation_view);
+//
+//        if (navigationView != null)
+//        {
+//            navigationView.setNavigationItemSelectedListener(this);
+//        }
+//    }
+//
+//    @Override
+//    public boolean onNavigationItemSelected(MenuItem item) {
+//        item.setChecked(true);
+//        drawerLayout.closeDrawers();
+//
+//        return true;
+//    }
 
-    public void selectDrawerItem(MenuItem menuItem)
+    private class SlideMenuClickListener implements ListView.OnItemClickListener
     {
-        Fragment fragment = null;
-
-        switch (menuItem.getItemId())
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
         {
-            case R.id.fragment1:
+            // display view for selected nav drawer item
+            displayView(position);
+        }
+    }
+
+    private void displayView(int position) {
+        // update the main content by replacing fragments
+        Fragment fragment = null;
+        switch (position)
+        {
+            case 0:
                 fragment = new FirstFragment();
                 break;
 
-            case R.id.fragment2:
+            case 1:
                 fragment = new SecondFragment();
                 break;
 
@@ -78,12 +141,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
 
-        if(fragment != null)
+        if (fragment != null)
         {
             FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.drawer_content, fragment).commit();
 
-            setTitle(menuItem.getTitle());
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2)
+            {
+                fragmentManager.beginTransaction()
+//                        .setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout)
+                        .replace(R.id.frame_container, fragment).commit();
+            }
+            else
+            {
+                fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
+            }
+
+            // update selected item and title, then close the drawer
+            mDrawerList.setItemChecked(position, true);
+            mDrawerList.setSelection(position);
+            setTitle(navMenuTitles[position]);
+            mDrawerLayout.closeDrawer(mDrawerList);
+        }
+        else
+        {
+            // error in creating fragment
+            Log.e("MainActivity", "Error in creating fragment");
         }
     }
 }

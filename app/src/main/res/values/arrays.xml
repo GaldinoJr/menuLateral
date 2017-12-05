@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="nav_drawer_items" >
+        <item>opc1</item>
+        <item>opc2</item>
+    </string-array>
+    <string-array name="nav_drawer_icons" >
+        <item>@drawable/ic_1</item>
+        <item>@drawable/ic_2</item>
+    </string-array>
+</resources>
