@@ -9,7 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.galdino.domain.NavDrawerItem;
+import com.galdino.examplemenulateral.HomeSideMenuItem;
 import com.galdino.examplemenulateral.R;
 
 import java.util.ArrayList;
@@ -21,21 +21,21 @@ import java.util.ArrayList;
 public class NavDrawerListAdapter extends BaseAdapter
 {
     private Context context;
-    private ArrayList<NavDrawerItem> navDrawerItems;
+    private ArrayList<HomeSideMenuItem> homeSideMenuItems;
 
-    public NavDrawerListAdapter(Context context, ArrayList<NavDrawerItem> navDrawerItems){
+    public NavDrawerListAdapter(Context context, ArrayList<HomeSideMenuItem> homeSideMenuItems){
         this.context = context;
-        this.navDrawerItems = navDrawerItems;
+        this.homeSideMenuItems = homeSideMenuItems;
     }
 
     @Override
     public int getCount() {
-        return navDrawerItems.size();
+        return homeSideMenuItems.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return navDrawerItems.get(position);
+        return homeSideMenuItems.get(position);
     }
 
     @Override
@@ -48,20 +48,20 @@ public class NavDrawerListAdapter extends BaseAdapter
         if (convertView == null) {
             LayoutInflater mInflater = (LayoutInflater)
                     context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            convertView = mInflater.inflate(R.layout.drawer_list_item, null);
+            convertView = mInflater.inflate(R.layout.home_side_menu_list_item, null);
         }
 
         ImageView imgIcon = convertView.findViewById(R.id.icon);
         TextView txtTitle = convertView.findViewById(R.id.title);
         TextView txtCount = convertView.findViewById(R.id.counter);
 
-        imgIcon.setImageResource(navDrawerItems.get(position).getIcon());
-        txtTitle.setText(navDrawerItems.get(position).getTitle());
+        imgIcon.setImageResource(homeSideMenuItems.get(position).getIcon());
+        txtTitle.setText(homeSideMenuItems.get(position).getTitle());
 
         // displaying count
         // check whether it set visible or not
-        if(navDrawerItems.get(position).getCounterVisibility()){
-            txtCount.setText(navDrawerItems.get(position).getCount());
+        if(homeSideMenuItems.get(position).getCounterVisibility()){
+            txtCount.setText(homeSideMenuItems.get(position).getCount());
         }else{
             // hide the counter view
             txtCount.setVisibility(View.GONE);

@@ -1,25 +1,26 @@
-package com.galdino.domain;
+package com.galdino.examplemenulateral.domain;
 
 /**
  * Created by galdino on 05/12/17.
  */
 
-public class NavDrawerItem
+public class HomeSideMenuItem
 {
     private String title;
     private int icon;
     private String count = "0";
     // boolean to set visiblity of the counter
     private boolean isCounterVisible = false;
+    private int id;
 
-    public NavDrawerItem(){}
+    public HomeSideMenuItem(){}
 
-    public NavDrawerItem(String title, int icon){
+    public HomeSideMenuItem(String title, int id){
         this.title = title;
-        this.icon = icon;
+        this.icon = id;
     }
 
-    public NavDrawerItem(String title, int icon, boolean isCounterVisible, String count){
+    public HomeSideMenuItem(String title, int icon, boolean isCounterVisible, String count){
         this.title = title;
         this.icon = icon;
         this.isCounterVisible = isCounterVisible;
@@ -56,5 +57,13 @@ public class NavDrawerItem
 
     public void setCounterVisibility(boolean isCounterVisible){
         this.isCounterVisible = isCounterVisible;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

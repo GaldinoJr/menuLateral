@@ -6,31 +6,34 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.galdino.NavDrawerListAdapter;
-import com.galdino.domain.NavDrawerItem;
+import com.galdino.examplemenulateral.adapter.HomeSideMenuAdapter;
+import com.galdino.examplemenulateral.domain.HomeSideMenuItem;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class MainActivity extends AppCompatActivity {
-
+    private View mDrawerView;
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+    private RecyclerView mDrawerList;
 
     // slide menu items
     private String[] navMenuTitles;
     private TypedArray navMenuIcons;
 
-    private ArrayList<NavDrawerItem> navDrawerItems;
-    private NavDrawerListAdapter adapter;
-
+    private ArrayList<HomeSideMenuItem> homeSideMenuItems;
+//    private NavDrawerListAdapter adapter;
+    private HomeSideMenuAdapter mAdapter;
     private static boolean alreadyOpen = false;
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,27 +49,24 @@ public class MainActivity extends AppCompatActivity {
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerList = findViewById(R.id.list_slidermenu);
+        mDrawerView = findViewById(R.id.drawer_view);
 
-        navDrawerItems = new ArrayList<>();
+        homeSideMenuItems = new ArrayList<>();
 
         // adding nav drawer items to array
         // Home
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
+        homeSideMenuItems.add(new HomeSideMenuItem(navMenuTitles[0], FirstFragment.));
         // Find People
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
+        homeSideMenuItems.add(new HomeSideMenuItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
 
         // Recycle the typed array
         navMenuIcons.recycle();
-
-        mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
-
-        // setting the nav drawer list adapter
-        adapter = new NavDrawerListAdapter(getApplicationContext(), navDrawerItems);
-        mDrawerList.setAdapter(adapter);
-
+        mDrawerList.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new HomeSideMenuAdapter();
+        mAdapter.setData(homeSideMenuItems);
+        mAdapter.observableItemPairClick().subscribe()
         if (savedInstanceState == null)
         {
-            // on first time display view for first nav item
             displayView(0);
         }
     }
@@ -80,14 +80,14 @@ public class MainActivity extends AppCompatActivity {
 
         if(!alreadyOpen)
         {
-            mDrawerLayout.openDrawer(mDrawerList);
+            mDrawerLayout.openDrawer(mDrawerView);
             Handler h = new Handler();
             h.postDelayed(new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    mDrawerLayout.closeDrawer(mDrawerList);
+                    mDrawerLayout.closeDrawer(mDrawerView);
                 }
             }, 2000);
 
@@ -114,18 +114,23 @@ public class MainActivity extends AppCompatActivity {
 //        return true;
 //    }
 
-    private class SlideMenuClickListener implements ListView.OnItemClickListener
+//    private class SlideMenuClickListener implements ListView.OnItemClickListener
+//    {
+//        @Override
+//        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+//        {
+//            // display view for selected nav drawer item
+//            displayView(position);
+//        }
+//    }
+
+    // Click
+    Consumer<HomeSideMenuItem> onSideMenuItemClick = homeSideMenuItem ->
     {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-        {
-            // display view for selected nav drawer item
-            displayView(position);
-        }
-    }
+        homeSideMenuItem.getId();
+    };
 
     private void displayView(int position) {
-        // update the main content by replacing fragments
         Fragment fragment = null;
         switch (position)
         {
@@ -157,10 +162,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // update selected item and title, then close the drawer
-            mDrawerList.setItemChecked(position, true);
-            mDrawerList.setSelection(position);
+//            mDrawerList.setItemChecked(position, true);
+//            mDrawerList.setSelection(position);
             setTitle(navMenuTitles[position]);
-            mDrawerLayout.closeDrawer(mDrawerList);
+            mDrawerLayout.closeDrawer(mDrawerView);
         }
         else
         {
