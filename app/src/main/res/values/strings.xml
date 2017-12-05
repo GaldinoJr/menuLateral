@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">ExampleMenuLateral</string>
+    <string name="desc_list_item_icon">te</string>
+    <string name="fragment_1">frag 1</string>
+    <string name="fragment_2">frag 2</string>
+    <string name="test">teste</string>
+    <string name="test_email">teste email</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
